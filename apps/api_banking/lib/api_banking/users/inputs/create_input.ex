@@ -26,5 +26,6 @@ defmodule ApiBanking.Users.Inputs.Create do
     |> validate_email(:email)
     |> validate_email(:email_confirmation)
     |> validate_equals_fields(:email, :email_confirmation)
+    |> put_password()
   end
 end
