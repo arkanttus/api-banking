@@ -1,13 +1,15 @@
-defmodule ApiBanking.Repo.Migrations.CreateTransaction do
+defmodule ApiBanking.Repo.Migrations.CreateTransactions do
   use Ecto.Migration
 
   def change do
-    create table(:transaction, primary_key: false) do
+    create table(:transactions, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :value, :float
+      add :amount, :integer
+      add :description, :string, null: true
+      add :status, :string
 
-      add :user_origin_id, references(:users, type: :uuid)
-      add :user_target_id, references(:users, type: :uuid)
+      add :account_origin_id, references(:accounts, type: :uuid)
+      add :account_target_id, references(:accounts, type: :uuid)
 
       timestamps()
     end
