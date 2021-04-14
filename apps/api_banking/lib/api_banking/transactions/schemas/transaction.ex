@@ -4,7 +4,8 @@ defmodule ApiBanking.Transactions.Schemas.Transaction do
   alias ApiBanking.Accounts.Schemas.Account
   import Ecto.Changeset
 
-  @required [:amount, :type, :description]
+
+  @required [:amount, :type, :description, :account_origin_id, :account_target_id]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
