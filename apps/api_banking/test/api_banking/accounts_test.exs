@@ -16,7 +16,7 @@ defmodule ApiBanking.AccountsTest do
     data = %{
       account_code: "12345",
       balance: 1000,
-      user: state[:user]
+      user_id: state[:user]
     }
 
     changeset = Account.changeset(data)
@@ -28,7 +28,7 @@ defmodule ApiBanking.AccountsTest do
     data = %{
       account_code: "12345",
       balance: -10,
-      user: state[:user]
+      user_id: state[:user]
     }
 
     changeset = Account.changeset(data)

@@ -15,11 +15,11 @@ defmodule ApiBanking.TransactionsTest do
       |> Repo.insert(on_conflict: :nothing)
 
     {:ok, account} =
-      Account.changeset(%{account_code: "12345", balance: 192_912, user: user.id})
+      Account.changeset(%{account_code: "12345", balance: 192_912, user_id: user.id})
       |> Repo.insert(on_conflict: :nothing)
 
     {:ok, account2} =
-      Account.changeset(%{account_code: "424242", balance: 100, user: user2.id})
+      Account.changeset(%{account_code: "424242", balance: 100, user_id: user2.id})
       |> Repo.insert(on_conflict: :nothing)
 
     {:ok, accounts: %{account: account.id, account2: account2.id}}
