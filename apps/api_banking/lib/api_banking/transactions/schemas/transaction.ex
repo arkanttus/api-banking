@@ -4,17 +4,19 @@ defmodule ApiBanking.Transactions.Schemas.Transaction do
   alias ApiBanking.Accounts.Schemas.Account
   import Ecto.Changeset
 
-  @required [:account_origin, :amount, :description, :account_target, :status]
+  @required [:amount, :type, :description]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "transactions" do
     field :amount, :integer
+    field :type, :string
     field :description, :string
-    field :status, :string
+    field :account_origin_id, :binary_id
+    field :account_target_id, :binary_id
 
-    belongs_to :account_origin, Account
-    belongs_to :account_target, Account
+    belongs_to :account_origin, Account, foreign_key: :account_origin_id, define_field: false
+    belongs_to :account_target, Account, foreign_key: :account_target_id, define_field: false
 
     timestamps()
   end
@@ -23,5 +25,6 @@ defmodule ApiBanking.Transactions.Schemas.Transaction do
     model
     |> cast(params, @required)
     |> validate_required(@required)
+    |> validate_number(:amount, greater_than_or_equal_to: 1)
   end
 end

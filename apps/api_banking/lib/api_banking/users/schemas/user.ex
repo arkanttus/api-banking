@@ -3,6 +3,7 @@ defmodule ApiBanking.Users.Schemas.User do
 
   import Ecto.Changeset
   import ApiBanking.Changesets
+  alias ApiBanking.Accounts.Schemas.Account
 
   @required [:name, :email, :password_hash]
 
@@ -12,6 +13,8 @@ defmodule ApiBanking.Users.Schemas.User do
     field :name, :string
     field :email, :string
     field :password_hash, :string
+
+    has_one :account, Account
 
     timestamps()
   end

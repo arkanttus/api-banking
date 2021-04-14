@@ -5,7 +5,7 @@ defmodule ApiBanking.Accounts.Schemas.Account do
   alias ApiBanking.Transactions.Schemas.Transaction
   import Ecto.Changeset
 
-  @required [:user, :account_code, :balance]
+  @required [:account_code, :balance]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -23,6 +23,6 @@ defmodule ApiBanking.Accounts.Schemas.Account do
     model
     |> cast(params, @required)
     |> validate_required(@required)
-    |> validate_number(:balance, min: 0)
+    |> validate_number(:balance, greater_than_or_equal_to: 0)
   end
 end
