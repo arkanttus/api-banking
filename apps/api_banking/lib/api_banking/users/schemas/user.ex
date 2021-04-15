@@ -5,6 +5,8 @@ defmodule ApiBanking.Users.Schemas.User do
   import ApiBanking.Changesets
   alias ApiBanking.Accounts.Schemas.Account
 
+  @derive {Jason.Encoder, except: [:__meta__, :account]}
+
   @required [:name, :email, :password_hash]
 
   @primary_key {:id, :binary_id, autogenerate: true}
