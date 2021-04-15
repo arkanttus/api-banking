@@ -12,10 +12,6 @@ defmodule ApiBanking.Users.Create do
   def create_user(params) do
     Logger.info("Inserting new User")
 
-    params
-    |> User.changeset()
-    |> Repo.insert()
-
     with %{valid?: true} = changeset <- User.changeset(params),
          {:ok, user} <- Repo.insert(changeset) do
       {:ok, user}

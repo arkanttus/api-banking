@@ -7,11 +7,11 @@ defmodule ApiBanking.TransactionsTest do
 
   setup do
     {:ok, user} =
-      User.changeset(%{name: "lee", email: "lee@mail.com", password_hash: "#$%12345"})
+      User.changeset(%{name: "ahri", email: "ahri@mail.com", password_hash: "#$%12345"})
       |> Repo.insert(on_conflict: :nothing)
 
     {:ok, user2} =
-      User.changeset(%{name: "yasuo", email: "yasuo@mail.com", password_hash: "#$%12345"})
+      User.changeset(%{name: "yone", email: "yone@mail.com", password_hash: "#$%12345"})
       |> Repo.insert(on_conflict: :nothing)
 
     {:ok, account} =
