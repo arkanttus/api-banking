@@ -27,5 +27,6 @@ defmodule ApiBanking.Users.Schemas.User do
     |> validate_required(@required)
     |> validate_length(:name, min: 3)
     |> validate_email(:email)
+    |> unique_constraint([:email])
   end
 end
