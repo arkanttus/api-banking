@@ -5,7 +5,7 @@ defmodule ApiBanking.Users.Schemas.User do
   import ApiBanking.Changesets
   alias ApiBanking.Accounts.Schemas.Account
 
-  @derive {Jason.Encoder, except: [:__meta__, :account]}
+  @derive {Jason.Encoder, except: [:__meta__]}
 
   @required [:name, :email, :password_hash]
 

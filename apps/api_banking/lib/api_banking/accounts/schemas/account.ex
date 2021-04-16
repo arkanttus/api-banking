@@ -5,6 +5,8 @@ defmodule ApiBanking.Accounts.Schemas.Account do
   alias ApiBanking.Transactions.Schemas.Transaction
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__, :transactions, :user]}
+
   @required [:account_code, :balance, :user_id]
 
   @primary_key {:id, :binary_id, autogenerate: true}

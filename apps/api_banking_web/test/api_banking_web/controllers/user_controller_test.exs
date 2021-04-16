@@ -15,11 +15,10 @@ defmodule ApiBankingWeb.UserControllerTest do
     }
 
     assert %{
+             "id" => _,
              "email" => ^email,
              "name" => "cait",
-             "inserted_at" => _,
-             "updated_at" => _,
-             "password_hash" => _
+             "account" => %{"account_code" => _, "balance" => 100_000, "id" => _}
            } =
              ctx.conn
              |> post("/api/users", data)

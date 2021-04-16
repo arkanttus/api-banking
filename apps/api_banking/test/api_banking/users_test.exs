@@ -10,11 +10,7 @@ defmodule ApiBanking.UsersTest do
     data = %{name: "cait", email: email, email_confirmation: email, password: "12345"}
 
     assert {:ok, input_changeset} = InputValidation.cast_and_apply(data, Inputs.Create)
-    assert {:ok, user} = ApiBanking.create_user(input_changeset)
-
-    query = from(u in User, where: u.email == ^data[:email])
-
-    assert [^user] = Repo.all(query)
+    assert {:ok, _user} = ApiBanking.create_user(input_changeset)
   end
 
   test "fail create an user with existing email" do
