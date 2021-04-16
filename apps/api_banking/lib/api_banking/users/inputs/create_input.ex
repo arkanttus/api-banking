@@ -23,8 +23,10 @@ defmodule ApiBanking.Users.Inputs.Create do
     |> cast(params, @required)
     |> validate_required(@required)
     |> validate_length(:name, min: 3)
+    |> validate_length(:password, min: 5)
     |> validate_email(:email)
     |> validate_email(:email_confirmation)
     |> validate_equals_fields(:email, :email_confirmation)
+    |> put_password()
   end
 end
