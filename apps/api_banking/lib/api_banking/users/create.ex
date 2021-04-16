@@ -72,4 +72,41 @@ defmodule ApiBanking.Users.Create do
       end)
     end)
   end
+
+  defp create_user_and_account(user_changeset) do
+    Multi.new()
+    |> Multi.insert(:create_user, user_changeset)
+    |> Multi.run(:create_account, fn repo, %{create_user: user} ->
+      insert_account(repo, user)
+    end)
+    |> Multi.run(:preload_data, fn repo, %{create_user: user} ->
+      preload_data(repo, user)
+    end)
+    |> run_transaction()
+  end
+
+  defp insert_account(repo, user) do
+    code = generate_code()
+
+    Account.changeset(%{user_id: user.id, account_code: code, balance: 100_000})
+    |> repo.insert()
+  end
+
+  defp preload_data(repo, user) do
+    {:ok, repo.preload(user, :account)}
+  end
+
+  defp run_transaction(multi) do
+    case Repo.transaction(multi) do
+      {:error, _operation, reason, _changes} -> {:error, reason}
+      {:ok, %{preload_data: user}} -> {:ok, user}
+    end
+  end
+
+  defp generate_code() do
+    Enum.reduce(0..5, "", fn _, acc ->
+      num = Enum.random(0..9) |> to_string()
+      acc <> num
+    end)
+  end
 end
