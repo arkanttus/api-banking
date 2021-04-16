@@ -9,5 +9,6 @@ defmodule ApiBankingWeb.Router do
     pipe_through :api
 
     post "/users", UserController, :create
+    post "/withdraw", TransactionController, :create_withdraw
   end
 end
