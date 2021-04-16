@@ -5,17 +5,18 @@ defmodule ApiBanking.Accounts.Schemas.Account do
   alias ApiBanking.Transactions.Schemas.Transaction
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__, :transactions, :user]}
 
   @required [:account_code, :balance, :user_id]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "accounts" do
-    field :account_code, :string
-    field :balance, :integer
+    field(:account_code, :string)
+    field(:balance, :integer)
 
-    belongs_to :user, User
-    has_many :transactions, Transaction
+    belongs_to(:user, User)
+    has_many(:transactions, Transaction)
 
     timestamps()
   end

@@ -12,11 +12,11 @@ defmodule ApiBanking.Users.Schemas.User do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
-    field :name, :string
-    field :email, :string
-    field :password_hash, :string
+    field(:name, :string)
+    field(:email, :string)
+    field(:password_hash, :string)
 
-    has_one :account, Account
+    has_one(:account, Account)
 
     timestamps()
   end
@@ -27,5 +27,6 @@ defmodule ApiBanking.Users.Schemas.User do
     |> validate_required(@required)
     |> validate_length(:name, min: 3)
     |> validate_email(:email)
+    |> unique_constraint([:email])
   end
 end
