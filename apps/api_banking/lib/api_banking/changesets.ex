@@ -25,7 +25,7 @@ defmodule ApiBanking.Changesets do
   end
 
   def put_password(%{valid?: true, changes: %{password: password}} = changeset) do
-    change(changeset, Bcrypt.add_hash(password))
+    change(changeset, Argon2.add_hash(password))
   end
 
   def put_password(changeset), do: changeset

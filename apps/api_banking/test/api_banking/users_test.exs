@@ -21,7 +21,7 @@ defmodule ApiBanking.UsersTest do
 
     assert {:ok, input_changeset} = InputValidation.cast_and_apply(data, Inputs.Create)
 
-    assert {:error, :email_conflict} = ApiBanking.create_user(input_changeset)
+    assert {:error, %{msg_error: _}} = ApiBanking.create_user(input_changeset)
   end
 
   test "fail create an user with length name less than 3" do

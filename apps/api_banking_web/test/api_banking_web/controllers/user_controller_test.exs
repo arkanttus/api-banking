@@ -41,8 +41,9 @@ defmodule ApiBankingWeb.UserControllerTest do
     assert ctx.conn
            |> post("/api/users", data)
            |> json_response(400) == %{
-             "description" => "Email already exists",
-             "type" => "conflict"
+             "description" => "invalid_input",
+             "type" => "bad_request",
+             "details" => %{"email" => ["has already been taken"]}
            }
   end
 
