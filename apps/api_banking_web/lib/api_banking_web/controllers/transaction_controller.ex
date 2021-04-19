@@ -19,13 +19,34 @@ defmodule ApiBankingWeb.TransactionController do
     end
   end
 
+  def create_transfer(conn, params) do
+    with {:ok, input_params} <- InputValidation.cast_and_apply(params, Inputs.Transfer),
+         {:ok, transaction} <- ApiBanking.create_transfer(input_params) do
+      transaction
+      |> format_transaction()
+      |> send_json(conn, 200)
+    else
+      {:error, %{msg_error: msg_error}} ->
+        %{type: "bad_request", description: "invalid_input", details: msg_error}
+        |> send_json(conn, 400)
+
+      {:error, :account_origin_not_exists} ->
+        %{type: "not_found", description: "Account origin not found"}
+        |> send_json(conn, 404)
+
+      {:error, :account_target_not_exists} ->
+        %{type: "not_found", description: "Account target not found"}
+        |> send_json(conn, 404)
+    end
+  end
+
   def format_transaction(transaction) do
     acc = transaction.account_origin
 
     %{
       transaction_id: transaction.id,
-      amount: transaction.amount,
-      account: %{id: acc.id, account_code: acc.account_code, balance: acc.balance}
+      transaction_amount: transaction.amount,
+      account: %{id: acc.id, account_code: acc.account_code, new_balance: acc.balance}
     }
   end
 
