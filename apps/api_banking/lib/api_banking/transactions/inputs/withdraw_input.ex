@@ -2,12 +2,11 @@ defmodule ApiBanking.Transactions.Inputs.Withdraw do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required [:amount, :description, :account_code]
+  @required [:amount, :account_code]
 
   @primary_key false
   embedded_schema do
     field :amount, :integer
-    field :description, :string
     field :account_code, :string
   end
 
