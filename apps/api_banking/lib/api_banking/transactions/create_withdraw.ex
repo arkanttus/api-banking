@@ -1,24 +1,22 @@
 defmodule ApiBanking.Transactions.CreateWithdraw do
-  alias ApiBanking.Repo
   alias Ecto.Multi
-  alias ApiBanking.Transactions.Schemas.Transaction
+  alias ApiBanking.Repo
+  alias ApiBanking.Changesets
   alias ApiBanking.Accounts.Schemas.Account
+  alias ApiBanking.Transactions.Inputs
+  alias ApiBanking.Transactions.Schemas.Transaction
   import Ecto.Query, only: [where: 3, lock: 2]
 
   require Logger
 
-  def create_withdraw(struct) when is_struct(struct) do
-    params = %{
-      amount: struct.amount,
-      description: struct.description,
-      account_code: struct.account_code
-    }
-
-    create_withdraw(params)
-  end
-
-  def create_withdraw(params) do
+  def create_withdraw(%Inputs.Withdraw{} = input_withdraw) do
     Logger.info("Creating a Transaction - Withdraw")
+
+    params = %{
+      amount: input_withdraw.amount,
+      description: input_withdraw.description,
+      account_code: input_withdraw.account_code
+    }
 
     with {:ok, transaction} <- withdraw_transaction(params) do
       {:ok, transaction}
@@ -27,13 +25,7 @@ defmodule ApiBanking.Transactions.CreateWithdraw do
         {:error, :acc_not_exists}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        msg_error =
-          Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-            Enum.reduce(opts, msg, fn {key, value}, acc ->
-              String.replace(acc, "%{#{key}}", to_string(value))
-            end)
-          end)
-
+        msg_error = Changesets.render_errors(changeset)
         {:error, %{msg_error: msg_error}}
     end
   end
@@ -51,8 +43,8 @@ defmodule ApiBanking.Transactions.CreateWithdraw do
     |> Multi.run(:create_transaction, fn _, %{get_account: acc} ->
       create_transaction(acc, params)
     end)
-    |> Multi.run(:preload_data, fn _, %{create_transaction: trans} ->
-      preload_data(trans)
+    |> Multi.run(:preload_data, fn _, %{create_transaction: trans, get_account: acc} ->
+      preload_data(trans, acc)
     end)
     |> run_transaction()
   end
@@ -88,8 +80,8 @@ defmodule ApiBanking.Transactions.CreateWithdraw do
     |> Repo.insert()
   end
 
-  defp preload_data(trans) do
-    {:ok, Repo.preload(trans, :account_origin)}
+  defp preload_data(trans, acc) do
+    {:ok, Map.put(trans, :account_origin, acc)}
   end
 
   defp run_transaction(multi) do
