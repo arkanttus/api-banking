@@ -14,7 +14,6 @@ defmodule ApiBanking.Transactions.CreateTransfer do
 
     params = %{
       amount: struct.amount,
-      description: struct.description,
       account_origin_code: struct.account_origin_code,
       account_target_code: struct.account_target_code
     }
@@ -96,7 +95,6 @@ defmodule ApiBanking.Transactions.CreateTransfer do
     %{
       amount: params.amount,
       type: "transfer",
-      description: params.description,
       account_origin_id: acc_origin.id,
       account_target_id: acc_target.id
     }

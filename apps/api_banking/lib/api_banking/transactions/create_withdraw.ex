@@ -14,7 +14,6 @@ defmodule ApiBanking.Transactions.CreateWithdraw do
 
     params = %{
       amount: input_withdraw.amount,
-      description: input_withdraw.description,
       account_code: input_withdraw.account_code
     }
 
@@ -61,7 +60,7 @@ defmodule ApiBanking.Transactions.CreateWithdraw do
   end
 
   defp update_account(acc, %{amount: amount} = _params) do
-    acc_params = %{balance: acc.balance - amount} |> IO.inspect()
+    acc_params = %{balance: acc.balance - amount}
 
     acc
     |> Account.changeset(acc_params)
@@ -72,7 +71,6 @@ defmodule ApiBanking.Transactions.CreateWithdraw do
     %{
       amount: params.amount,
       type: "withdraw",
-      description: params.description,
       account_origin_id: acc.id,
       account_target_id: acc.id
     }

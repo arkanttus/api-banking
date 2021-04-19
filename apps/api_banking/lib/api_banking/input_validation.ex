@@ -1,4 +1,6 @@
 defmodule ApiBanking.InputValidation do
+  alias ApiBanking.Changesets
+
   @moduledoc """
   Validate a map params with a given module schema.
   """
@@ -14,12 +16,7 @@ defmodule ApiBanking.InputValidation do
         {:ok, Ecto.Changeset.apply_changes(changeset)}
 
       %{valid?: false} = changeset ->
-        msg_error =
-          Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-            Enum.reduce(opts, msg, fn {key, value}, acc ->
-              String.replace(acc, "%{#{key}}", to_string(value))
-            end)
-          end)
+        msg_error = Changesets.render_errors(changeset)
 
         {:error, %{msg_error: msg_error}}
     end

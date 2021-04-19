@@ -6,7 +6,6 @@ defmodule ApiBanking.Repo.Migrations.CreateTransactions do
       add :id, :uuid, primary_key: true
       add :amount, :integer
       add :type, :string
-      add :description, :string, null: true
 
       add :account_origin_id, references(:accounts, type: :uuid)
       add :account_target_id, references(:accounts, type: :uuid)

@@ -2,12 +2,11 @@ defmodule ApiBanking.Transactions.Inputs.Transfer do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required [:amount, :description, :account_origin_code, :account_target_code]
+  @required [:amount, :account_origin_code, :account_target_code]
 
   @primary_key false
   embedded_schema do
     field(:amount, :integer)
-    field(:description, :string)
     field(:account_origin_code, :string)
     field(:account_target_code, :string)
   end
