@@ -6,7 +6,8 @@ defmodule ApiBankingWeb.TransactionController do
   def create_withdraw(conn, params) do
     with {:ok, input_params} <- InputValidation.cast_and_apply(params, Inputs.Withdraw),
          {:ok, transaction} <- ApiBanking.create_withdraw(input_params) do
-      format_transaction(transaction)
+      transaction
+      |> format_transaction()
       |> send_json(conn, 200)
     else
       {:error, %{msg_error: msg_error}} ->

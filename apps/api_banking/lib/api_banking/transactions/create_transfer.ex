@@ -70,13 +70,8 @@ defmodule ApiBanking.Transactions.CreateTransfer do
     )
     |> Multi.run(
       :preload_data,
-      fn _,
-         %{
-           create_transaction: trans,
-           get_account_origin: acc_origin,
-           get_account_target: acc_target
-         } ->
-        preload_data(trans, acc_origin, acc_target)
+      fn _, %{create_transaction: trans, get_account_origin: acc_origin} ->
+        preload_data(trans, acc_origin)
       end
     )
     |> run_transaction()
@@ -109,13 +104,8 @@ defmodule ApiBanking.Transactions.CreateTransfer do
     |> Repo.insert()
   end
 
-  defp preload_data(trans, acc_origin, acc_target) do
-    updated_trans =
-      trans
-      |> Map.put(:account_origin, acc_origin)
-      |> Map.put(:account_target, acc_target)
-
-    {:ok, updated_trans}
+  defp preload_data(trans, acc_origin) do
+    {:ok, Map.put(trans, :account_origin, acc_origin)}
   end
 
   defp run_transaction(multi) do
