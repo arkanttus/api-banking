@@ -22,7 +22,8 @@ defmodule ApiBankingWeb.TransactionController do
   def create_transfer(conn, params) do
     with {:ok, input_params} <- InputValidation.cast_and_apply(params, Inputs.Transfer),
          {:ok, transaction} <- ApiBanking.create_transfer(input_params) do
-      format_transaction(transaction)
+      transaction
+      |> format_transaction()
       |> send_json(conn, 200)
     else
       {:error, %{msg_error: msg_error}} ->

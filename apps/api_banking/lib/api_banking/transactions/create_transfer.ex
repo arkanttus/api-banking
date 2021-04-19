@@ -1,25 +1,23 @@
 defmodule ApiBanking.Transactions.CreateTransfer do
-  alias ApiBanking.Repo
   alias Ecto.Multi
-  alias ApiBanking.Transactions.Schemas.Transaction
+  alias ApiBanking.Repo
+  alias ApiBanking.Changesets
+  alias ApiBanking.Transactions.Inputs
   alias ApiBanking.Accounts.Schemas.Account
+  alias ApiBanking.Transactions.Schemas.Transaction
   import Ecto.Query, only: [where: 3, lock: 2]
 
   require Logger
 
-  def create_transfer(struct) when is_struct(struct) do
+  def create_transfer(%Inputs.Transfer{} = struct) do
+    Logger.info("Creating a Transaction - Transfer")
+
     params = %{
       amount: struct.amount,
       description: struct.description,
       account_origin_code: struct.account_origin_code,
       account_target_code: struct.account_target_code
     }
-
-    create_transfer(params)
-  end
-
-  def create_transfer(params) do
-    Logger.info("Creating a Transaction - Transfer")
 
     with {:ok, transaction} <- transfer_transaction(params) do
       {:ok, transaction}
@@ -31,13 +29,7 @@ defmodule ApiBanking.Transactions.CreateTransfer do
         {:error, :account_target_not_exists}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        msg_error =
-          Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-            Enum.reduce(opts, msg, fn {key, value}, acc ->
-              String.replace(acc, "%{#{key}}", to_string(value))
-            end)
-          end)
-
+        msg_error = Changesets.render_errors(changeset)
         {:error, %{msg_error: msg_error}}
     end
   end
@@ -47,7 +39,8 @@ defmodule ApiBanking.Transactions.CreateTransfer do
 
     Multi.new()
     |> Multi.run(:get_account_origin, fn _repo, _change ->
-      get_and_lock_account(account_origin_code)
+      account_origin_code
+      |> get_and_lock_account()
       |> case do
         %Account{} = acc -> {:ok, acc}
         nil -> {:error, :account_origin_not_exists}
@@ -58,7 +51,8 @@ defmodule ApiBanking.Transactions.CreateTransfer do
       update_account(acc, balance)
     end)
     |> Multi.run(:get_account_target, fn _repo, _change ->
-      get_and_lock_account(account_target_code)
+      account_target_code
+      |> get_and_lock_account()
       |> case do
         %Account{} = acc -> {:ok, acc}
         nil -> {:error, :account_target_not_exists}
@@ -74,9 +68,17 @@ defmodule ApiBanking.Transactions.CreateTransfer do
         create_transaction(acc_origin, acc_target, params)
       end
     )
-    |> Multi.run(:preload_data, fn _, %{create_transaction: trans} ->
-      preload_data(trans)
-    end)
+    |> Multi.run(
+      :preload_data,
+      fn _,
+         %{
+           create_transaction: trans,
+           get_account_origin: acc_origin,
+           get_account_target: acc_target
+         } ->
+        preload_data(trans, acc_origin, acc_target)
+      end
+    )
     |> run_transaction()
   end
 
@@ -107,8 +109,13 @@ defmodule ApiBanking.Transactions.CreateTransfer do
     |> Repo.insert()
   end
 
-  defp preload_data(trans) do
-    {:ok, Repo.preload(trans, :account_origin)}
+  defp preload_data(trans, acc_origin, acc_target) do
+    updated_trans =
+      trans
+      |> Map.put(:account_origin, acc_origin)
+      |> Map.put(:account_target, acc_target)
+
+    {:ok, updated_trans}
   end
 
   defp run_transaction(multi) do
