@@ -6,7 +6,8 @@ defmodule ApiBankingWeb.UserController do
   def create(conn, params) do
     with {:ok, input_params} <- InputValidation.cast_and_apply(params, Inputs.Create),
          {:ok, user} <- ApiBanking.create_user(input_params) do
-      format_user(user)
+      user
+      |> format_user()
       |> send_json(conn, 200)
     else
       {:error, %{msg_error: msg_error}} ->
