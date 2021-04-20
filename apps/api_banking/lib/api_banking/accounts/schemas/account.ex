@@ -1,11 +1,11 @@
 defmodule ApiBanking.Accounts.Schemas.Account do
   use Ecto.Schema
 
-  alias ApiBanking.Users.Schemas.User
   alias ApiBanking.Transactions.Schemas.Transaction
+  alias ApiBanking.Users.Schemas.User
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, except: [:__meta__, :transactions, :user]}
+  @derive {Jason.Encoder, except: [:__meta__]}
 
   @required [:account_code, :balance, :user_id]
 
@@ -16,7 +16,8 @@ defmodule ApiBanking.Accounts.Schemas.Account do
     field(:balance, :integer)
 
     belongs_to(:user, User)
-    has_many(:transactions, Transaction)
+    has_many(:transactions_out, Transaction, foreign_key: :account_origin_id)
+    has_many(:transactions_in, Transaction, foreign_key: :account_target_id)
 
     timestamps()
   end

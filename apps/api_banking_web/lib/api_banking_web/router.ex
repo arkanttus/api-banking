@@ -11,5 +11,6 @@ defmodule ApiBankingWeb.Router do
     post "/users", UserController, :create
     post "/withdraw", TransactionController, :create_withdraw
     post "/transfer", TransactionController, :create_transfer
+    get "/accounts/:account_id/statement", AccountController, :get_statement
   end
 end

@@ -14,8 +14,17 @@ defmodule ApiBanking.Transactions.Schemas.Transaction do
     field(:account_origin_id, :binary_id)
     field(:account_target_id, :binary_id)
 
-    belongs_to(:account_origin, Account, foreign_key: :account_origin_id, define_field: false)
-    belongs_to(:account_target, Account, foreign_key: :account_target_id, define_field: false)
+    belongs_to(:account_origin, Account,
+      foreign_key: :account_origin_id,
+      references: :id,
+      define_field: false
+    )
+
+    belongs_to(:account_target, Account,
+      foreign_key: :account_target_id,
+      references: :id,
+      define_field: false
+    )
 
     timestamps()
   end
