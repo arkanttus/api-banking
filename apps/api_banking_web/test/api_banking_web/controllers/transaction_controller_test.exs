@@ -16,11 +16,11 @@ defmodule ApiBankingWeb.TransactionControllerTest do
 
       assert %{
                "account" => %{
-                 "account_code" => acc_code,
-                 "id" => acc_id,
-                 "new_balance" => new_balance
+                 "account_code" => ^acc_code,
+                 "id" => ^acc_id,
+                 "new_balance" => ^new_balance
                },
-               "transaction_amount" => amount,
+               "transaction_amount" => ^amount,
                "transaction_id" => _
              } =
                conn
@@ -87,11 +87,11 @@ defmodule ApiBankingWeb.TransactionControllerTest do
 
       assert %{
                "account" => %{
-                 "account_code" => acc_code,
-                 "id" => acc_id,
-                 "new_balance" => new_balance
+                 "account_code" => ^acc_code,
+                 "id" => ^acc_id,
+                 "new_balance" => ^new_balance
                },
-               "transaction_amount" => amount,
+               "transaction_amount" => ^amount,
                "transaction_id" => _
              } =
                conn
