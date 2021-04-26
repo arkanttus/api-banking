@@ -7,12 +7,14 @@ defmodule ApiBankingWeb.AccountController do
       send_json(statement, conn, 200)
     else
       {:uuid, :error} ->
-        %{type: "bad_request", description: "Account id must be a valid UUID"}
-        |> send_json(conn, 400)
+        send_json(
+          %{type: "bad_request", description: "Account id must be a valid UUID"},
+          conn,
+          400
+        )
 
       {:error, :account_not_exists} ->
-        %{type: "not_found", description: "Account not found"}
-        |> send_json(conn, 404)
+        send_json(%{type: "not_found", description: "Account not found"}, conn, 404)
     end
   end
 

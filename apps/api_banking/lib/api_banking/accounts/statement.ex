@@ -4,7 +4,7 @@ defmodule ApiBanking.Accounts.Statement do
   alias ApiBanking.Repo
   alias Ecto.Multi
 
-  import Ecto.Query, only: [where: 3, lock: 2, order_by: 2]
+  import Ecto.Query, only: [where: 3, order_by: 2]
 
   require Logger
 
@@ -22,10 +22,10 @@ defmodule ApiBanking.Accounts.Statement do
   defp statement_transaction(acc_id) do
     Multi.new()
     |> Multi.run(:get_account, fn _repo, _change ->
-      get_and_lock_account(acc_id)
+      get_account(acc_id)
     end)
     |> Multi.run(:get_transactions, fn _, %{get_account: acc} ->
-      preload_transactions(acc)
+      get_transactions(acc)
     end)
     |> Multi.run(:make_statement, fn _, %{get_transactions: trans, get_account: acc} ->
       make_statement(trans, acc)
@@ -33,18 +33,16 @@ defmodule ApiBanking.Accounts.Statement do
     |> run_transaction()
   end
 
-  defp get_and_lock_account(acc_id) do
+  defp get_account(acc_id) do
     Account
-    |> where([a], a.id == ^acc_id)
-    |> lock("FOR UPDATE")
-    |> Repo.one()
+    |> Repo.get(acc_id)
     |> case do
       %Account{} = acc -> {:ok, acc}
       nil -> {:error, :account_not_exists}
     end
   end
 
-  defp preload_transactions(acc) do
+  defp get_transactions(acc) do
     transactions =
       Transaction
       |> where([t], t.account_origin_id == ^acc.id or t.account_target_id == ^acc.id)
@@ -66,22 +64,24 @@ defmodule ApiBanking.Accounts.Statement do
   defp make_statement_by_type(type, acc_id, trans) do
     case type do
       "withdraw" ->
-        %{operation: type, amount: trans.amount, date: trans.inserted_at}
+        %{operation: type, amount: trans.amount, date: trans.inserted_at, title: "Saque"}
 
       "transfer" ->
         if acc_id == trans.account_origin_id do
           %{
-            operation: "transfer sent",
+            operation: type,
             amount: trans.amount,
             transfer_to: trans.account_target_id,
-            date: trans.inserted_at
+            date: trans.inserted_at,
+            title: "Transferência Enviada"
           }
         else
           %{
-            operation: "transfer received",
+            operation: type,
             amount: trans.amount,
             transfer_from: trans.account_origin_id,
-            date: trans.inserted_at
+            date: trans.inserted_at,
+            title: "Transferência Recebida"
           }
         end
     end

@@ -12,5 +12,7 @@ defmodule ApiBanking.Repo.Migrations.CreateTransactions do
 
       timestamps()
     end
+
+    create index(:transactions, [:account_origin_id, :account_target_id])
   end
 end
