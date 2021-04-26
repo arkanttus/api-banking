@@ -42,7 +42,7 @@ defmodule ApiBanking.Transactions.CreateWithdraw do
     |> Multi.run(:create_transaction, fn _, %{get_account: acc} ->
       create_transaction(acc, params)
     end)
-    |> Multi.run(:preload_data, fn _, %{create_transaction: trans, get_account: acc} ->
+    |> Multi.run(:preload_data, fn _, %{create_transaction: trans, update_account: acc} ->
       preload_data(trans, acc)
     end)
     |> run_transaction()

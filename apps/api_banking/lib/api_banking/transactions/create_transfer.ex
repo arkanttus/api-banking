@@ -69,7 +69,7 @@ defmodule ApiBanking.Transactions.CreateTransfer do
     )
     |> Multi.run(
       :preload_data,
-      fn _, %{create_transaction: trans, get_account_origin: acc_origin} ->
+      fn _, %{create_transaction: trans, update_account_origin: acc_origin} ->
         preload_data(trans, acc_origin)
       end
     )
